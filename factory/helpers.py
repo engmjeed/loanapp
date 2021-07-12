@@ -1,7 +1,15 @@
 from loans.models import Application
 from clients.models import Client, LoanProfile
 from datetime import date
+from django.conf import settings
+from django.core.cache import cache
+import requests
+from requests.auth import HTTPBasicAuth
+from payments.models import Checkout
 
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 class Helpers:
     def create_loan_application(self,client,product,amount,period):
@@ -47,6 +55,22 @@ class Helpers:
         except Client.DoesNotExist:
             client = None
         return client
+    def generate_token(self):
+        # if cache.get('access_token'):
+        #     token = cache.get('access_token').encode('utf-8')
+        #     return token
+        # else:
+
+        consumer_key = settings.VARIABLES.get('CONSUMER_KEY')
+        consumer_secret = settings.VARIABLES.get('CONSUMER_SECRET')
+        r = requests.get(settings.VARIABLES.get('TOKEN_URL'), auth=HTTPBasicAuth(consumer_key, consumer_secret))
+        token=r.json()
+        access_token = token.get('access_token')
+        cache.set('access_token',access_token,1700)
+        return token.get('access_token')
+    
+    def create_checkout(self,amount,ref_no,msisdn):
+        return Checkout.objects.create(amount=amount,ref_no=ref_no,msisdn=msisdn)
             
 
        

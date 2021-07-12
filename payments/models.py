@@ -22,6 +22,13 @@ class PayOutStatusEnum(enum.Enum):
     ERRORED = 2
     __default__ = PENDING
 
+class CheckOutStatusEnum(enum.Enum):
+    
+    PENDING = 0
+    PROCESSED = 1
+    ERRORED = 2
+    __default__ = PENDING
+
 
 class PayIn(FactoryModel):
     
@@ -58,4 +65,17 @@ class PayOut(FactoryModel):
         amount = loan.application.amount
         receipient_phone = str(loan.application.client.msisdn).strip('+').strip()
         return cls.objects.create(loan=loan,amount=amount,receipient_phone=receipient_phone)
+class Checkout(FactoryModel):
+    
+    amount = models.DecimalField(max_digits=7,decimal_places=2)
+    ref_no = models.IntegerField()
+    msisdn = models.CharField(max_length=13)
+    status = enum.EnumField(CheckOutStatusEnum)
+    notes = models.TextField(null=True)
+    @classmethod
+    def get_unprocessed(cls,limit):
+        return cls.objects.filter(status=CheckOutStatusEnum.default()).order_by('id')[:limit]
+
+
+
 

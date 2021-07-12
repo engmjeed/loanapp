@@ -7,6 +7,7 @@ from django.conf import settings
 from products.models import Product
 from clients.models import LoanProfile
 from .utils import fetcher
+from factory.helpers import helpers
 
 class MyAccountHomeScreen(UssdScreen, ScreenMixin):
 	
@@ -288,8 +289,12 @@ class LoansPayAllScreen(UssdScreen, ScreenMixin):
 		pass
 
 	def render_menu(self):
-		self.print('Will be paid here')
-		return self.CON
+		loan = self.state.loan
+		helpers.create_checkout(amount=loan.amount,ref_no=loan.application.code,msisdn=self.session.msisdn)
+		
+
+		self.print('Check your phone and Enter your Mpesa PIN to complete')
+		return self.END
 
 		
 
@@ -309,11 +314,23 @@ class LoansPartScreen(UssdScreen, ScreenMixin):
 
 
 
-	def handle_input(self, *args):
-		pass
+	def handle_input(self, opt):
+		try:
+			amount = int(opt)
+		except:
+			self.print('Incorrect Amount')
+			self.print('Enter Amount')
+			return self.CON
+		else:
+			helpers.create_checkout(
+				amount=amount,
+				ref_no=self.state.loan.application.code,
+				msisdn=self.session.phone_number)
+			self.print('Check your phone and Enter your Mpesa PIN to complete')
+			return self.END
 
 	def render_menu(self):
-		self.print('Will be paid here in part')
+		self.print('Enter Amount')
 		return self.CON
 
 		
