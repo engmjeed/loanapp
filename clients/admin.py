@@ -25,7 +25,7 @@ class LoanProfileInline(admin.TabularInline):
     
     fk_name = 'client'
     fields = ('product','minimum_principle','maximum_principle','loan_limit','available_limit','is_active',)
-    # readonly_fields = ('product','minimum_principle','maximum_principle','loan_limit','available_limit','is_active',)
+    readonly_fields = ('product','minimum_principle','maximum_principle','loan_limit','available_limit','is_active',)
     
     def has_change_permission(self, request, obj=None):
         if not obj:
