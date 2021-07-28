@@ -14,8 +14,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path,include
+from django.urls import path,include,re_path
 from authentication.views import obtain_expiring_auth_token
+from django.views.static import serve
+from django.conf import settings
 
 
 urlpatterns = [
@@ -32,6 +34,14 @@ urlpatterns = [
     path('api/v1/authenticate/',obtain_expiring_auth_token,name='authenticate'),
 
 ]
+if settings.DEBUG:
+    urlpatterns.append(
+        re_path(
+            r"^static/(?P<path>.*)$",
+            serve,
+            kwargs={"document_root": settings.STATIC_ROOT},
+        )
+    )
 # Text to put at the end of each page's < title > .
 admin.site.site_title = 'Jijenge Loans Admin'
 
