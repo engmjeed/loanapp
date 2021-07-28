@@ -41,9 +41,7 @@ class HomeScreen(UssdScreen, ScreenMixin):
 	('1', ("Request Loan", "jl.products")),
 	('2', ("Repay Loan", "jl.my_loans")),
 	('3', ("My Account", "jl.my_account_home")),
-	# ('4', ("Activate", "jl.not_implemented")),
-	
-	
+	# ('4', ("Activate", "jl.not_implemented")),	
 ])
 
 	class Meta:

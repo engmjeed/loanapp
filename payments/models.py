@@ -33,6 +33,7 @@ class CheckOutStatusEnum(enum.Enum):
 class PayIn(FactoryModel):
     
     client = models.ForeignKey('clients.Client', on_delete=models.DO_NOTHING)
+    loan = models.ForeignKey('loans.Loan',on_delete=models.DO_NOTHING,null=True)
     amount = models.DecimalField(max_digits=8,decimal_places=2)
     mpesa_code = models.CharField(max_length=10)
     bill_ref_no = models.CharField(max_length=10,null=True,blank=True)
@@ -40,6 +41,11 @@ class PayIn(FactoryModel):
     status = enum.EnumField(PayInStatusEnum)
     notes = models.CharField(max_length=50)
     raw = models.JSONField()
+
+    @classmethod
+    def get_unprocessed(cls,limit):
+        return cls.objects.filter(status=PayInStatusEnum.default()).exclude(loan__isnull=True).order_by('id')[:limit]
+
 
 class PayOut(FactoryModel):
     

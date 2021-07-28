@@ -9,7 +9,9 @@ import json
 from django.conf import settings
 import hashlib
 import logging
+from dateutil.relativedelta import relativedelta
 from factory.helpers import Helpers
+from transactions.models import TransactionTypeEnum
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 logger = logging.getLogger(__name__)
@@ -40,6 +42,10 @@ def run():
 
         for item in payouts:
             try:
+                loan_profile = helpers.get_client_product_loan_profile(
+                    item.loan.application.client,
+                    item.loan.application.product
+                    )
                 msisdn = item.receipient_phone
                 amount = int(item.amount)
                 ref_no = item.loan.application.ref_no
@@ -52,20 +58,30 @@ def run():
                             'short_code':short_code,
                             'key':key
                           }
-
-                conf = config()
                 url = conf.get('payouts_url')
-                r = requests.post(url,json=payload,verify=False,timeout=5)
+                r = requests.post(url,json=payload,verify=False,timeout=20)
                 response = r.json()
                 r_status = response.get('status')
                 print(response,"response")
                
                 if r_status =='created':
+                    date_due = timezone.now() + relativedelta(months=item.loan.application.duration)
                     item.status = PayOutStatusEnum.PROCESSED
                     item.loan.disbursed_on = timezone.now()
                     item.loan.is_disbursed = True
                     item.notes = 'Queued'
+                    item.loan.date_due = date_due
                     item.save()
+                    loan_profile.available_limit -= item.loan.application.amount
+                    loan_profile.save()
+                    helpers.create_transaction(
+                    client=item.loan.application.client,
+                    type = TransactionTypeEnum.DEBIT,
+                    product=item.loan.application.product,
+                    subject='Loan Disbursement',
+                    initial_balance = loan_profile.available_limit,
+                    amount = item.loan.application.amount,
+                    ref=item.loan)
                    
                     
                 else:

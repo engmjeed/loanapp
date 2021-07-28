@@ -20,14 +20,14 @@ class ApplicationStatusEnum(enum.Enum):
     FAILED = 4
     __default__ = PENDING
     
-    # __transitions__ = {
-    #     APPROVED: (PENDING,REJECTED),  # Can go from PENDING,REJECTED to APPROVED
-    #     REJECTED: (PENDING,),  # Can go from PENDING to REJECTED
-    #     FAILED: (PENDING,),  # Can go from PENDING to REJECTED
-    #     PENDING: (FAILED,),  # Can go from PENDING to REJECTED
-    #     PROCESSED: (APPROVED,),  # Can go from APPROVED to PROCESSED
+    __transitions__ = {
+        APPROVED: (PENDING,REJECTED),  # Can go from PENDING,REJECTED to APPROVED
+        REJECTED: (PENDING,),  # Can go from PENDING to REJECTED
+        FAILED: (PENDING,APPROVED),  # Can go from PENDING to REJECTED
+        PENDING: (FAILED,),  # Can go from PENDING to REJECTED
+        PROCESSED: (APPROVED,),  # Can go from APPROVED to PROCESSED
 
-    # }
+    }
 
 class Application(FactoryModel):
     
@@ -53,8 +53,9 @@ class Application(FactoryModel):
 class Loan(FactoryModel):
 
     application = models.OneToOneField(Application, on_delete=models.PROTECT,related_name='loan')
-    date_due = models.DateTimeField()
+    date_due = models.DateTimeField(null=True)
     amount = models.DecimalField(max_digits=8,decimal_places=2)
+    paid_amount = models.DecimalField(max_digits=8,decimal_places=2,default=0)
     disbursed_on = models.DateTimeField(null=True)
     is_disbursed = models.BooleanField(default=False)
     is_cleared = models.BooleanField(default=False)

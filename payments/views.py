@@ -22,10 +22,12 @@ class Payins(View):
         
         
         client = helpers.get_client_by_msisdn(msisdn)
+        loan = helpers.get_loan_by_code(bill_reference_number)
         timestamp = arrow.get(transaction_time, "YYYYMMDDHHmmss")
         transaction_date = timestamp.datetime
         PayIn.objects.create(
             client=client,
+            loan = loan,
             amount=transaction_amount,
             mpesa_code=transaction_id,
             bill_ref_no=bill_reference_number,

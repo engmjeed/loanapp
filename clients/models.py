@@ -1,5 +1,7 @@
+from transactions.models import Transaction
 from django.db import models
 from django.db.models import constraints
+from django.utils import translation
 from phonenumber_field.modelfields import PhoneNumberField
 from factory.models import FactoryModel
 from django.conf import settings
@@ -29,9 +31,13 @@ class Client(FactoryModel):
                     )
             ]
 
+    @property
+    def transactions(self):
+        return Transaction.objects.filter(client=self.client)
+
 class LoanProfile(FactoryModel):
     
-    id = models.BigIntegerField(primary_key=True)
+    id = models.BigAutoField(primary_key=True)
     minimum_principle = models.DecimalField(max_digits=7,decimal_places=2,null=True,blank=True)
     maximum_principle = models.DecimalField(max_digits=7,decimal_places=2,null=True,blank=True)
     loan_limit = models.DecimalField(max_digits=8,decimal_places=2,default=0)

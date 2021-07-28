@@ -15,7 +15,7 @@ class Product(FactoryModel):
     interest_rate = models.DecimalField(max_digits=4,decimal_places=2)
     max_repayment_months = models.IntegerField()
     charges = models.ManyToManyField('charges.Charge',related_name='charges')
-    fund = models.ForeignKey('funds.Fund', on_delete= models.PROTECT)
+    fund = models.ForeignKey('funds.Fund', on_delete= models.PROTECT,related_name='fund')
     
     def __str__(self):
         return self.slug or self.name

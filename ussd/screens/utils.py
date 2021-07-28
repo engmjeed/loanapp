@@ -25,7 +25,7 @@ class Fetcher:
 		return ls
 	def get_my_loans_menu(self,client):
 		ls = []
-		menu = Loan.objects.filter(is_disbursed=True,application__client=client).order_by('-id').values_list('application__product__name','pk','amount')
+		menu = Loan.objects.filter(is_disbursed=True,application__client=client,is_cleared=False).order_by('-id').values_list('application__product__name','pk','amount')
 		ls.extend(((str(i), x) for i,x in enumerate(menu, 1)))
 		ls = OrderedDict(ls)
 		return ls

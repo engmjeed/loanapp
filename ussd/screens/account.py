@@ -200,7 +200,7 @@ class LoanLimitScreen(UssdScreen, ScreenMixin):
 		return LoanProfile.objects.get(product=product,client=self.session.client)
 
 class MyLoansScreen(UssdScreen, ScreenMixin):
-	nav_menu = None
+	
 
 	class Meta:
 		label = 'my_loans'
@@ -225,7 +225,8 @@ class MyLoansScreen(UssdScreen, ScreenMixin):
 			return self.CON
 		else:
 			self.print('You currently do not have any Loan')
-			return self.END
+
+			return self.CON
 
 	def render(self, opt=None, *args):
 		if opt is not None and not args:

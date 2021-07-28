@@ -16,7 +16,9 @@ from factory.helpers import helpers
 
  
 
-
+def calculate_interest(application):
+		interest = (application.amount*application.product.interest_rate*application.duration)//100
+		return interest
 def run():
     
     ROWS_SELECTION_LIMIT=50
@@ -41,23 +43,27 @@ def run():
                     application.notes = 'Loan Amount more than Available Loan Limit'
                     application.save()
                     continue
-                elif not application.client.is_active:
+                if not application.client.is_active:
                     application.status = ApplicationStatusEnum.REJECTED
                     application.notes = 'Client is in Inactive State'
                     application.save()
                     continue
+                if not helpers.is_loan_product_fund_sufficient(application):
+                    application.status = ApplicationStatusEnum.REJECTED
+                    application.notes = 'Loan Product Fund has Inssufficent Balance'
+                    application.save()
                 else:
-
-                    date_due = timezone.now() + relativedelta(months=application.duration)
-                    disbursed_on = timezone.now()
                     with transaction.atomic():
-                        loan = Loan.objects.create(application=application,date_due=date_due)
+                        amount = application.amount
+                        for charge in application.product.charges.all():
+                            amount+=charge.amount
+                        loan_interest = calculate_interest(application)
+                        amount+= loan_interest
+                        loan = Loan.objects.create(application=application,amount=amount)
                         payout = PayOut.create(loan=loan)
                     application.status = ApplicationStatusEnum.PROCESSED
                     application.notes = 'Loan Application Queued for Processing'
                     application.save()
-                    loan_profile.available_limit -= application.amount
-                    loan_profile.save()
                     print("Successfully Added payout")
 
 
