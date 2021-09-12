@@ -55,11 +55,12 @@ def run():
                 else:
                     with transaction.atomic():
                         amount = application.amount
+                        date_due = timezone.now() + relativedelta(months=application.duration)
                         for charge in application.product.charges.all():
                             amount+=charge.amount
                         loan_interest = calculate_interest(application)
                         amount+= loan_interest
-                        loan = Loan.objects.create(application=application,amount=amount)
+                        loan = Loan.objects.create(application=application,amount=amount,date_due=date_due)
                         payout = PayOut.create(loan=loan)
                     application.status = ApplicationStatusEnum.PROCESSED
                     application.notes = 'Loan Application Queued for Processing'

@@ -25,17 +25,21 @@ class ApplicationChangeForm(forms.ModelForm):
         model =Application
         fields = ('status', 'notes',)
 
-    
 
 class LoanAdmin(admin.ModelAdmin):
 
-    list_display = ('get_code','get_client','get_amount','get_charges','get_total_amount','date_due',)
+    
+    list_display = ('get_code','get_client','get_amount','get_charges','get_total_amount','date_due','get_is_disbursed',)
     list_display_links = ('get_code',)
     readonly_fields = ('get_code','get_client','get_amount','get_charge_details',
         'get_charges','get_total_amount',
         'date_due','disbursed_on','get_is_overdue',
         'application','is_cleared','is_waived','is_written_off',
         'cleared_on','get_is_disbursed','get_loan_balance','paid_amount',)
+    
+    list_filter = ('is_disbursed','application__client',)
+    preserve_filters = False
+    # search_fields = ('application',)
     # list_per_page = 3
     # paginator = Paginator
 

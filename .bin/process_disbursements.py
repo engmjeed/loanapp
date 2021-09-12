@@ -46,7 +46,7 @@ def run():
                     item.loan.application.client,
                     item.loan.application.product
                     )
-                msisdn = item.receipient_phone
+                msisdn = item.receiving_phone
                 amount = int(item.amount)
                 ref_no = item.loan.application.ref_no
                 short_code = conf.get('short_code')
@@ -65,12 +65,10 @@ def run():
                 print(response,"response")
                
                 if r_status =='created':
-                    date_due = timezone.now() + relativedelta(months=item.loan.application.duration)
                     item.status = PayOutStatusEnum.PROCESSED
                     item.loan.disbursed_on = timezone.now()
                     item.loan.is_disbursed = True
                     item.notes = 'Queued'
-                    item.loan.date_due = date_due
                     item.save()
                     loan_profile.available_limit -= item.loan.application.amount
                     loan_profile.save()

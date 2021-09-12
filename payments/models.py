@@ -51,14 +51,14 @@ class PayOut(FactoryModel):
     
     loan = models.OneToOneField('loans.Loan', on_delete=models.DO_NOTHING)
     amount =models.DecimalField(max_digits=7,decimal_places=2)
-    receipient_phone = models.CharField(max_length=13)
+    receiving_phone = models.CharField(max_length=13)
     status = enum.EnumField(PayOutStatusEnum)
     notes = models.CharField(max_length=50)
     mpesa_code = models.CharField(max_length=10,null=True)
     results = models.JSONField(default=dict)
 
     def __str__(self) -> str:
-        return self.receipient_phone + ' #' + str(self.amount)
+        return self.receiving_phone + ' #' + str(self.amount)
 
     @classmethod
     def get_unprocessed(cls,limit):
@@ -69,8 +69,8 @@ class PayOut(FactoryModel):
     @classmethod
     def create(cls,loan):
         amount = loan.application.amount
-        receipient_phone = str(loan.application.client.msisdn).strip('+').strip()
-        return cls.objects.create(loan=loan,amount=amount,receipient_phone=receipient_phone)
+        receiving_phone = str(loan.application.client.msisdn).strip('+').strip()
+        return cls.objects.create(loan=loan,amount=amount,receiving_phone=receiving_phone)
 class Checkout(FactoryModel):
     
     amount = models.DecimalField(max_digits=7,decimal_places=2)
