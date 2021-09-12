@@ -38,4 +38,5 @@ migrations
 /.cache
 .logs/
 pytest.ini
-run.py
+/__pycache__/*
+/__pycache__/*.pyc
