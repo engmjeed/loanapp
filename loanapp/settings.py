@@ -78,10 +78,10 @@ INSTALLED_APPS = [
 ]
 JAZZMIN_SETTINGS:Dict[str, Any] = {
     # title of the window (Will default to current_admin_site.site_title if absent or None)
-    "site_title": "Jijenge Loans",
+    "site_title": "Hela Salary Advance",
 
     # Title on the brand, and login screen (19 chars max) (defaults to current_admin_site.site_header if absent or None)
-    "site_header": "Jijenge Loans",
+    "site_header": "Hela Salary Advance",
 
     # Logo to use for your site, must be present in static files, used for brand on top left
     # "site_logo": "books/img/logo.png",
@@ -93,10 +93,10 @@ JAZZMIN_SETTINGS:Dict[str, Any] = {
     "site_icon": None,
 
     # Welcome text on the login screen
-    "welcome_sign": "Jijenge Loans Admin Portal",
+    "welcome_sign": "Hela Salary Advance Admin Portal",
 
     # Copyright on the footer
-    "copyright": "Jijenge Loans Ltd",
+    "copyright": "Hela Salary Advance Ltd",
 
     # The model admin to search from the search bar, search bar omitted if excluded
     "search_model": "users.User",

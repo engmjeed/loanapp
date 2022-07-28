@@ -43,10 +43,10 @@ if settings.DEBUG:
         )
     )
 # Text to put at the end of each page's < title > .
-admin.site.site_title = 'Jijenge Loans Admin'
+admin.site.site_title = 'Hela Salary Advance Admin'
 
 # Text to put in each page's <h1> (and above login form).
-admin.site.site_header = 'Jijenge Loans Admin'
+admin.site.site_header = 'Hela Salary Advance Admin'
 
 # Text to put at the top of the admin index page.
-admin.site.index_title = 'Jijenge Loans'
+admin.site.index_title = 'Hela Salary Advance'
