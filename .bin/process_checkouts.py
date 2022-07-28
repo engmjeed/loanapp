@@ -35,7 +35,7 @@ def run():
 					"Password": settings.VARIABLES.get('PASSWORD'),
 					"Timestamp": settings.VARIABLES.get('Timestamp'),
 					"TransactionType": "CustomerPayBillOnline",
-					"Amount": item.amount,
+					"Amount": int(item.amount),
 					"PartyA": item.msisdn,
 					"PartyB": settings.VARIABLES.get('BUSINESS_SHORTCODE'),
 					"PhoneNumber": item.msisdn,
