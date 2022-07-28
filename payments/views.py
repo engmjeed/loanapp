@@ -2,7 +2,7 @@ from email.mime import application
 from django.shortcuts import render
 from django.views import View
 from factory.helpers import helpers
-from payments.models import PayIn
+from payments.models import PayIn, PayOutStatusEnum
 from payments.models import PayOut,PayInStatusEnum
 from loans.models import Application,ApplicationStatusEnum,Loan
 from django.http import HttpResponse,JsonResponse
@@ -63,7 +63,7 @@ class PayoutResponse(View):
         payout.result_code = result_code
         payout.results=results
         payout.mpesa_code = mpesa_code
-        payout.status = PayInStatusEnum.PROCESSED
+        payout.status = PayOutStatusEnum.PROCESSED
         payout.save()
         loan.is_disbursed = True
         loan.disbursed_on = timezone.now()
