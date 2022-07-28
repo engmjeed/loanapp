@@ -4,7 +4,7 @@ from django.views import View
 from factory.helpers import helpers
 from payments.models import PayIn
 from payments.models import PayOut,PayInStatusEnum
-from loans.models import Loan,ApplicationStatusEnum
+from loans.models import Application,ApplicationStatusEnum,Loan
 from django.http import HttpResponse,JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
@@ -56,8 +56,8 @@ class PayoutResponse(View):
         results = data.get('results')
         notes = data.get('result_description')
         mpesa_code = data.get('mpesa_transaction_id')
-        loan = get_object_or_404(Loan, ref_no=ref_no)
-        l_application = loan.application
+        l_application = get_object_or_404(Application,ref_no=ref_no)
+        loan = get_object_or_404(Loan, application=l_application)
         payout = get_object_or_404(PayOut,loan=loan)
         payout.notes = notes
         payout.result_code = result_code
