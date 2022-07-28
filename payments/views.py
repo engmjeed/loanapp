@@ -1,12 +1,17 @@
+from email.mime import application
 from django.shortcuts import render
 from django.views import View
 from factory.helpers import helpers
 from payments.models import PayIn
+from payments.models import PayOut,PayInStatusEnum
+from loans.models import Loan,ApplicationStatusEnum
 from django.http import HttpResponse,JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+from django.utils import timezone
 import arrow
 import json
+from django.shortcuts import get_object_or_404
 
 # Create your views here.
 
@@ -41,4 +46,45 @@ class Payins(View):
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
+
+class PayoutResponse(View):
+    def post(self,request):
+        data = json.loads(request.body.decode('utf-8'))
+
+        ref_no = data.get('transaction_id')
+        result_code = data.get('result_code')
+        results = data.get('results')
+        notes = data.get('result_description')
+        mpesa_code = data.get('mpesa_transaction_id')
+        loan = get_object_or_404(Loan, ref_no=ref_no)
+        l_application = loan.application
+        payout = get_object_or_404(PayOut,loan=loan)
+        payout.notes = notes
+        payout.result_code = result_code
+        payout.results=results
+        payout.mpesa_code = mpesa_code
+        payout.status = PayInStatusEnum.PROCESSED
+        payout.save()
+        loan.is_disbursed = True
+        loan.disbursed_on = timezone.now()
+        loan.save()
+        l_application.status = ApplicationStatusEnum.PROCESSED
+        l_application.save()
+        return JsonResponse({'status':'Accepted'})
+
+    def get(self,request):
+        return JsonResponse({'status':'Method Not Allowed'},status=405)
+
+
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    
+
+
+
+
+
+
 

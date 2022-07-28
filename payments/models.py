@@ -53,9 +53,10 @@ class PayOut(FactoryModel):
     amount =models.DecimalField(max_digits=7,decimal_places=2)
     receiving_phone = models.CharField(max_length=13)
     status = enum.EnumField(PayOutStatusEnum)
-    notes = models.CharField(max_length=50)
+    notes = models.TextField()
     mpesa_code = models.CharField(max_length=10,null=True)
     results = models.JSONField(default=dict)
+    result_code = models.CharField(max_length=10,null=True,blank=True)
 
     def __str__(self) -> str:
         return self.receiving_phone + ' #' + str(self.amount)
@@ -71,6 +72,8 @@ class PayOut(FactoryModel):
         amount = loan.application.amount
         receiving_phone = str(loan.application.client.msisdn).strip('+').strip()
         return cls.objects.create(loan=loan,amount=amount,receiving_phone=receiving_phone)
+
+    
 class Checkout(FactoryModel):
     
     amount = models.DecimalField(max_digits=7,decimal_places=2)

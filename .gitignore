@@ -14,7 +14,8 @@ src/*.egg-info
 media/*
 
 .vscode
-
+*/__pycache__/.pyc
+*.pyc
 lib64
 __pycache__
 */__pycache__/*

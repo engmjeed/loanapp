@@ -21,13 +21,13 @@ helpers = Helpers()
 def config():
     return settings.IPN_CONFIG
 
-def get_key(msisdn,amount,reference_number,short_code):
+def get_key(msisdn,amount,reference_number):
     conf = config()
     app_key = conf.get('app-key')
     app_secret = conf.get('app-secret')
     
 
-    key_text=(msisdn+str(amount)+app_key+app_secret+reference_number+short_code).encode('utf-8')
+    key_text=(msisdn+str(amount)+app_key+app_secret+reference_number).encode('utf-8')
     return hashlib.sha256(key_text).hexdigest()
 
 
@@ -50,15 +50,15 @@ def run():
                 amount = int(item.amount)
                 ref_no = item.loan.application.ref_no
                 short_code = conf.get('short_code')
-                key = get_key(msisdn,amount,ref_no,short_code)
+                key = get_key(msisdn,amount,ref_no)
 
                 payload = { 'msisdn':msisdn,
                             'amount':amount,
-                            'ref_no':ref_no,
-                            'short_code':short_code,
+                            'reference_number':ref_no,
                             'key':key
                           }
                 url = conf.get('payouts_url')
+                print("key", key)
                 r = requests.post(url,json=payload,verify=False,timeout=20)
                 response = r.json()
                 r_status = response.get('status')
@@ -84,7 +84,7 @@ def run():
                     
                 else:
                     item.status = PayOutStatusEnum.ERRORED
-                    item.notes = response.get('status')
+                    item.notes = response.get('error') or response.get('status') 
                     item.save()
                     logger.error(f"{response.get('status')}")
 
